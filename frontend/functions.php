@@ -79,6 +79,11 @@ function moda_feminina_fix_loop_add_to_cart_link( $link, $product ) {
 }
 add_filter( 'woocommerce_loop_add_to_cart_link', 'moda_feminina_fix_loop_add_to_cart_link', 10, 2 );
 
+function moda_feminina_fix_block_grid_add_to_cart_aria( $html, $data, $product ) {
+    return preg_replace( '/(<a\b[^>]*\badd_to_cart_button\b[^>]*?)\s*aria-label="[^"]*"/', '$1', $html );
+}
+add_filter( 'woocommerce_blocks_product_grid_item_html', 'moda_feminina_fix_block_grid_add_to_cart_aria', 10, 3 );
+
 function moda_feminina_featured_badge() {
     global $product;
 
@@ -272,9 +277,10 @@ add_action('wp_ajax_nopriv_moda_feminina_add_to_cart', 'moda_feminina_ajax_add_t
 // AJAX Load More Products
 function moda_feminina_ajax_load_more() {
     check_ajax_referer('moda_feminina_load_more', '_wpnonce');
-    
-    $paged = isset($_POST['paged']) ? absint($_POST['paged']) : 2;
-    
+
+    $paged = isset($_POST['paged']) ? absint($_POST['paged']) : (isset($_POST['page']) ? absint($_POST['page']) : 2);
+    $paged = max(2, $paged);
+
     $args = array(
         'post_type' => 'product',
         'post_status' => 'publish',
@@ -283,28 +289,32 @@ function moda_feminina_ajax_load_more() {
         'meta_query' => WC()->query->get_meta_query(),
         'tax_query' => WC()->query->get_tax_query(),
     );
-    
-    // Apply current filters
-    if (isset($_GET['filter_tamanho'])) {
+
+    // Apply current filters from POST or GET
+    $filter_tamanho = isset($_POST['filter_tamanho']) ? $_POST['filter_tamanho'] : (isset($_GET['filter_tamanho']) ? $_GET['filter_tamanho'] : '');
+    if ($filter_tamanho !== '') {
         $args['tax_query'][] = array(
             'taxonomy' => 'pa_tamanho',
             'field' => 'slug',
-            'terms' => wc_clean(wp_unslash($_GET['filter_tamanho'])),
+            'terms' => wc_clean(wp_unslash($filter_tamanho)),
         );
     }
-    
-    if (isset($_GET['filter_cor'])) {
+
+    $filter_cor = isset($_POST['filter_cor']) ? $_POST['filter_cor'] : (isset($_GET['filter_cor']) ? $_GET['filter_cor'] : '');
+    if ($filter_cor !== '') {
         $args['tax_query'][] = array(
             'taxonomy' => 'pa_cor',
             'field' => 'slug',
-            'terms' => wc_clean(wp_unslash($_GET['filter_cor'])),
+            'terms' => wc_clean(wp_unslash($filter_cor)),
         );
     }
-    
-    if (isset($_GET['min_price']) && isset($_GET['max_price'])) {
+
+    $min_price = isset($_POST['min_price']) ? $_POST['min_price'] : (isset($_GET['min_price']) ? $_GET['min_price'] : '');
+    $max_price = isset($_POST['max_price']) ? $_POST['max_price'] : (isset($_GET['max_price']) ? $_GET['max_price'] : '');
+    if ($min_price !== '' && $max_price !== '') {
         $args['meta_query'][] = array(
             'key' => '_price',
-            'value' => array(wc_clean(wp_unslash($_GET['min_price'])), wc_clean(wp_unslash($_GET['max_price']))),
+            'value' => array(floatval($min_price), floatval($max_price)),
             'type' => 'numeric',
             'compare' => 'BETWEEN',
         );
@@ -648,7 +658,11 @@ function moda_feminina_ajax_find_variation() {
     check_ajax_referer('moda_feminina_add_to_cart', '_wpnonce');
     
     $product_id = isset($_POST['product_id']) ? absint($_POST['product_id']) : 0;
-    $variation = isset($_POST['variation']) && is_array($_POST['variation']) ? $_POST['variation'] : array();
+    $raw_variation = isset($_POST['variation']) && is_array($_POST['variation']) ? wp_unslash($_POST['variation']) : array();
+    $variation = array();
+    foreach ($raw_variation as $attr_key => $attr_val) {
+        $variation[sanitize_text_field($attr_key)] = sanitize_text_field($attr_val);
+    }
     
     if (!$product_id) {
         wp_send_json_error(array('message' => 'Produto inválido'));

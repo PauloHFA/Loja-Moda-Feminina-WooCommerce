@@ -1,6 +1,8 @@
-# E-commerce de Moda Feminina (WooCommerce)
+# Loja de Moda Feminina — WooCommerce (`Loja-Moda-Feminina-WooCommerce`)
 
-Projeto Freelancer: Loja online especializada em roupas e acessórios femininos, construída com **WordPress + WooCommerce**.
+[![CI](https://github.com/PauloHFA/Loja-Moda-Feminina-WooCommerce/actions/workflows/ci.yml/badge.svg)](https://github.com/PauloHFA/Loja-Moda-Feminina-WooCommerce/actions/workflows/ci.yml)
+
+Projeto Freelancer: Loja online especializada em roupas e acessórios femininos, construída com **WordPress + WooCommerce** (acompanhamento de pendências em [`PENDENCIAS.md`](PENDENCIAS.md)).
 
 ## Visão Geral
 Este projeto implementa todos os requisitos do documento "Projeto Freelancer E-commerce de Moda Feminina (WooCommerce) – Requisitos e Delimitação".

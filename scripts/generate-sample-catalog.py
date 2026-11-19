@@ -1,4 +1,3 @@
-# -*- coding: utf-8 -*-
 """Gera uma planilha de amostra no formato de docs/modelo-planilha-produtos.csv.
 
 Não é o catálogo do cliente. Serve para validar a importação de 300 produtos

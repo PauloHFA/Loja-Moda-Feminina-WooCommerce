@@ -1,0 +1,51 @@
+name: Loja Moda Feminina CI
+
+on:
+  push:
+    branches: ["main"]
+  pull_request:
+    branches: ["main"]
+
+jobs:
+  lint-and-validate:
+    name: PHP Lint, JS Check & Catalog Tests
+    runs-on: ubuntu-24.04
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup PHP 8.2
+        uses: shivammathur/setup-php@v2
+        with:
+          php-version: "8.2"
+
+      - name: PHP Syntax Check (php -l)
+        run: |
+          find frontend scripts -name "*.php" -print0 | xargs -0 -n1 php -l
+
+      - name: Setup Node.js 20
+        uses: actions/setup-node@v4
+        with:
+          node-version: "20"
+
+      - name: JS Syntax Check (node --check)
+        run: |
+          node --check frontend/js/custom.js
+          node --check accessibility-test.js
+
+      - name: Setup Python 3.12
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      - name: Install Python Test & Lint Tools
+        run: |
+          python -m pip install --upgrade pip
+          pip install pytest ruff
+
+      - name: Ruff Lint
+        run: ruff check scripts/generate-sample-catalog.py tests/
+
+      - name: Run Catalog & Theme Validation Tests
+        run: python -m pytest tests -v

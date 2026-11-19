@@ -607,24 +607,31 @@
     
     function loadMoreProducts($, $grid, page) {
         const $loader = $('<div class="mf-skeleton mf-skeleton--button"></div>').appendTo($grid);
-        
+        const params = new URLSearchParams(window.location.search);
+        const payload = {
+            action: 'moda_feminina_load_more_products',
+            paged: page,
+            _wpnonce: mf_ajax_params.load_more_nonce
+        };
+        ['filter_tamanho', 'filter_cor', 'min_price', 'max_price'].forEach(function(key) {
+            if (params.has(key)) {
+                payload[key] = params.get(key);
+            }
+        });
+
         $.ajax({
             url: mf_ajax_params.ajax_url,
             type: 'POST',
-            data: {
-                action: 'moda_feminina_load_more_products',
-                page: page,
-                _wpnonce: mf_ajax_params.add_to_cart_nonce
-            },
+            data: payload,
             success: function(response) {
                 $loader.remove();
-                
-                if (response.success && response.html) {
-                    $grid.append(response.html);
+
+                if (response.success && response.data && response.data.html) {
+                    $grid.append(response.data.html);
                     // Re-initialize animations for new items
                     initIntersectionObserver($);
                 }
-                
+
                 loading = false;
             },
             error: function() {

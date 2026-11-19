@@ -1,4 +1,0 @@
--- NAO EXECUTAR.
--- O rascunho anterior inseria termos sem term_id e podia corromper o banco.
--- Categorias, atributos e produtos de exemplo sao criados por scripts/seed-catalog.php
--- via WP-CLI (./setup.ps1).

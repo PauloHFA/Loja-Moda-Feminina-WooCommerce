@@ -1,0 +1,30 @@
+{
+  "name": "loja-moda-feminina-woocommerce",
+  "version": "1.0.0",
+  "description": "Projeto Freelancer: Loja online especializada em roupas e acessórios femininos, construída com WordPress + WooCommerce.",
+  "main": "accessibility-test.js",
+  "directories": {
+    "doc": "docs"
+  },
+  "scripts": {
+    "lint:js": "node --check frontend/js/custom.js && node --check accessibility-test.js",
+    "test": "node --check frontend/js/custom.js && node --check accessibility-test.js"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/PauloHFA/Loja-Moda-Feminina-WooCommerce.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "type": "commonjs",
+  "bugs": {
+    "url": "https://github.com/PauloHFA/Loja-Moda-Feminina-WooCommerce/issues"
+  },
+  "homepage": "https://github.com/PauloHFA/Loja-Moda-Feminina-WooCommerce#readme",
+  "dependencies": {
+    "@axe-core/puppeteer": "^4.14.0",
+    "lighthouse": "^13.6.0",
+    "puppeteer": "^25.16.0"
+  }
+}
